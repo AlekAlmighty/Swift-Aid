@@ -111,10 +111,15 @@ a, button {
 
 /* Hero Section */
 h2 {
-    font-size: 32px; 
-    margin-top: 20px;
+    font-size: 50px; 
+    margin-top: 10px;
+    font-weight: bold;
     color:  #282828;
+    -webkit-text-fill-color: white; /* Make sure the text color is white */
+    -webkit-text-stroke-width: 2px; /* Adjust the width as needed */
+    -webkit-text-stroke-color: black; /* Stroke color is black */
 }
+
 
 .button-container {
     display: flex;

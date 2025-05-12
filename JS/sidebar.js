@@ -1,17 +1,17 @@
-function show(){
-    document.querySelector('.hamburger').classList.toggle('open')
-    document.querySelector('.navigation').classList.toggle('active')
+function show() {
+    document.querySelector('.hamburger').classList.toggle('open');
+    document.querySelector('.navigation').classList.toggle('active');
 }
 
-// dark mode
+// Dark mode
 var icon = document.getElementById("icon");
 
-icon.onclick = function(){
+icon.onclick = function () {
     document.body.classList.toggle("dark-theme");
-    if(document.body.classList.contains("dark-theme")){
-        icon.src = "Images/sun.png";
-    }else{
-        icon.src = "Images/moon.png";
+    if (document.body.classList.contains("dark-theme")) {
+        icon.textContent = "Light Mode"; // Change text to "Light Mode"
+    } else {
+        icon.textContent = "Dark Mode"; // Change text to "Dark Mode"
     }
-}
-// end of dark mode
+};
+// End of dark mode

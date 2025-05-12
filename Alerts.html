@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CSS/Alerts.css" class="style css">
+    <title>Hexagon Emergency Buttons</title>
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <button class="hamburger" onclick="show()">
+            <div id="bar1" class="bar"></div>
+            <div id="bar2" class="bar"></div>
+            <div id="bar3" class="bar"></div>
+        </button>
+
+        <nav class="navitems">
+            <ul class="navul">
+                <li class="navli"><a href="#" class="navbtns">Home</a></li>
+                <li class="navli"><a href="#" class="navbtns">About</a></li>
+                <li class="navli"><a href="#" class="navbtns">Blog</a></li>
+                <li class="navli"><a href="#" id="icon" class="navbtns">Dark Mode</a></li>
+            </ul>
+        </nav>
+    </div>
+        <h2>Emergency Alert System</h2>
+
+        <div class="button-container">
+            <div class="hexagon" onclick="alert('Police Alert Sent!')">
+                <img src="images/police1.png" alt="Police">
+            </div>
+            <div class="row">
+                <div class="hexagon" onclick="alert('Fire Alert Sent!')">
+                    <img src="images/firefighter1.png" alt="Fire">
+                </div>
+                <div class="hexagon" onclick="alert('Medical Alert Sent!')">
+                    <img src="images/ambulance1.png" alt="Medical">
+                </div>
+            </div>
+        </div>
+
+        <button class="send-alert" onclick="alert('Emergency Alert Sent!')">SEND ALERT</button>
+    </div>
+    <script src="JS/sidebar.js"></script>
+</body>
+</html>

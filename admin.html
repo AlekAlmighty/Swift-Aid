@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="CSS/admins.css">
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+    import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqWoVm3LJ8-UrcFfyOk7MAMFg3UKA1GtI",
+      authDomain: "swift-aid-fb2ca.firebaseapp.com",
+      projectId: "swift-aid-fb2ca",
+      storageBucket: "swift-aid-fb2ca.appspot.com",
+      messagingSenderId: "267643968718",
+      appId: "1:267643968718:web:ee7652922171748c73049f",
+      measurementId: "G-QPRTE85R6V",
+      databaseURL: "https://swift-aid-fb2ca-default-rtdb.firebaseio.com"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    console.log("Firebase initialized successfully!");
+
+    // Firebase Reference for locations
+    const locationsRef = ref(database, 'locations');
+
+    // Initialize the Leaflet Map
+    const map = L.map('map').setView([14.8292, 120.2820], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add Gordon College Marker
+    const gordonCollegeLatLng = L.latLng(14.832005, 120.282648);
+    L.marker(gordonCollegeLatLng).addTo(map).bindPopup('Gordon College').openPopup();
+
+    let selectedLocation = null;
+    let marker = null;
+    let routeControl = null;
+    const statusElement = document.getElementById('status');
+
+    map.on('click', function(e) {
+      selectedLocation = e.latlng;
+      if (marker) map.removeLayer(marker);
+      marker = L.marker(selectedLocation).addTo(map).bindPopup("Selected Location").openPopup();
+      document.getElementById('saveButton').disabled = false;
+      updateStatus("Location selected. Enter a name and save.", "success");
+    });
+
+    function updateStatus(msg = '', type = 'info') {
+      statusElement.textContent = msg;
+      statusElement.className = 'status ' + type;
+    }
+
+    // Save Location to Firebase
+    window.saveLocation = function() {
+      const locationName = document.getElementById('locationName').value.trim();
+      if (!selectedLocation || !locationName) {
+        alert("Please select a location and enter a name.");
+        return;
+      }
+
+      const newLocationRef = push(locationsRef);
+      set(newLocationRef, {
+        name: locationName,
+        latitude: selectedLocation.lat,
+        longitude: selectedLocation.lng
+      }).then(() => {
+        alert('Location saved successfully!');
+        document.getElementById('saveButton').disabled = true;
+        document.getElementById('locationName').value = '';
+        updateStatus("Location saved!", "success");
+      }).catch(error => {
+        console.error('Error saving location:', error);
+        updateStatus("Error saving location.", "error");
+      });
+    };
+
+    // Load Existing Locations
+    onValue(locationsRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("Received data:", data);
+
+      if (data) {
+        Object.keys(data).forEach(key => {
+          const loc = data[key];
+          if (loc.latitude && loc.longitude) {
+            L.marker([loc.latitude, loc.longitude])
+              .addTo(map)
+              .bindPopup(loc.name || "Unnamed Location");
+          }
+        });
+      }
+    }, {
+      onlyOnce: false
+    });
+
+    // Optional: WebSocket Connection (for alerts)
+    const socket = new WebSocket('ws://localhost:8080');
+
+    socket.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    socket.onmessage = (event) => {
+      const alertsDiv = document.getElementById('alerts');
+      const alertMessage = document.createElement('p');
+      alertMessage.textContent = event.data;
+      alertsDiv.appendChild(alertMessage);
+    };
+
+    socket.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+
+    // Add routing functionality
+    function addRouting(startLat, startLng, endLat, endLng) {
+      const startPoint = L.latLng(startLat, startLng);
+      const endPoint = L.latLng(endLat, endLng);
+
+      // Add a routing control to the map
+      L.Routing.control({
+        waypoints: [startPoint, endPoint],
+        routeWhileDragging: true,
+        show: true,
+        createMarker: function(i, waypoint, n) {
+          return L.marker(waypoint.latLng, {
+            draggable: true
+          });
+        }
+      }).addTo(map);
+    }
+
+    // Example usage: Add a route from Gordon College to a sample destination
+    const sampleDestinationLatLng = L.latLng(14.8292, 120.2820);
+    addRouting(gordonCollegeLatLng.lat, gordonCollegeLatLng.lng, sampleDestinationLatLng.lat, sampleDestinationLatLng.lng);
+  </script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Routing and Geocoder -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <style>
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+      padding: 20px;
+      width: 90%;
+      margin: auto;
+    }
+    .map-section, .chat-section, .callers-info, .alert-receiver {
+      border: 2px solid #333;
+      padding: 15px;
+      background: #fff;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    .map-section { grid-column: 1; grid-row: 1 / span 2; }
+    .chat-section { grid-column: 2; grid-row: 1; }
+    .callers-info { grid-column: 1; grid-row: 2; }
+    .alert-receiver { grid-column: 2; grid-row: 2; }
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .status.success { color: green; }
+    .status.error { color: red; }
+    .status.info { color: blue; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="map-section">
+      <h2>Map</h2>
+      <div id="map"></div>
+      <div id="status" class="status info" aria-live="polite">Click on the map to select a location.</div>
+
+      <h2>Select & Save Your Location</h2>
+      <input type="text" id="locationName" placeholder="Enter a name for the location">
+      <button id="saveButton" onclick="saveLocation()" disabled>Save Location</button>
+    </div>
+
+    <div class="chat-section">
+      <h2>Chat Box</h2>
+      <div id="chat-box"></div>
+    </div>
+
+    <div class="callers-info">
+      <h2>Callers Information</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="callers-data"></tbody>
+      </table>
+    </div>
+
+    <div class="alert-receiver">
+      <h2>Alert Receiver</h2>
+      <div id="alerts"></div>
+    </div>
+  </div>
+</body>
+</html>

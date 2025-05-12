@@ -43,10 +43,12 @@ a, button {
 
 .navigation {
     position: fixed;
+    top: 0;
     left: -500px;
     width: 350px;
     height: 100%;
     background-color: #000;
+    z-index: 1000; /* Ensure the navbar is always on top */
     transition: 0.5s;
 }
 
@@ -62,6 +64,7 @@ a, button {
 
 .hamburger, .bar {
     position: fixed;
+    z-index: 1100; /* Ensure the hamburger menu is above everything */
 }
 
 .hamburger {
@@ -77,7 +80,7 @@ a, button {
 
 .bar {
     top: 3px;
-    background: #000;
+    background: #000; /* Keep the hamburger bar color unchanged */
     width: 100%;
     height: 4px;
     transition: all 0.3s ease-in;
@@ -120,24 +123,23 @@ h2 {
     -webkit-text-stroke-color: black; /* Stroke color is black */
 }
 
-
 .button-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px; /* Reduced spacing */
-    margin-top: 50px;
+    gap: 40px; /* Spacing between rows of hexagons */
+    margin-top: 150px; /* Push the hexagons below the navbar */
 }
 
 .row {
     display: flex;
     justify-content: center;
-    gap: 30px; /* Reduced spacing between hexagons */
+    gap: 30px; /* Spacing between hexagons */
 }
 
 .hexagon {
-    width: 220px; /* Larger hexagon */
-    height: 190px; /* Taller hexagon */
+    width: 220px;
+    height: 190px;
     cursor: pointer;
     position: relative;
     background-color: #007bff;
@@ -154,11 +156,12 @@ h2 {
 }
 
 .hexagon img {
-    width: 90%; /* Adjusted size for better fit */
+    width: 90%;
     height: 90%;
     object-fit: cover;
     clip-path: polygon(50% 0%, 87% 25%, 87% 75%, 50% 100%, 13% 75%, 13% 25%);
 }
+
 /* Responsive Layout for Mobile */
 @media screen and (max-width: 768px) {
     .row {

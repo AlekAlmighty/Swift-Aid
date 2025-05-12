@@ -1,251 +1,52 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CSS/Alerts.css" class="style css">
+    <title>Hexagon Emergency Buttons</title>
 
-body { 
-    font-family: Arial, sans-serif; 
-    text-align: center; 
-    background-color: var(--primary-color);
-}
+</head>
+<body>
+    <div class="navigation">
+        
+        <button class="hamburger" onclick="show()">
+            <div id="bar1" class="bar"></div>
+            <div id="bar2" class="bar"></div>
+            <div id="bar3" class="bar"></div>
+        </button>
 
-/* Dark mode */
-:root {
-    --primary-color: #f4f4f9;
-    --secondary-color: #d7d5d5;
-}
+        <nav class="navitems">
+            <ul class="navul">
+                <li class="navli"><a href="#" class="navbtns">Home</a></li>
+                <li class="navli"><a href="#" class="navbtns">About</a></li>
+                <li class="navli"><a href="#" class="navbtns">Profile</a></li>
+                <li class="navli"><a href="#" id="icon" class="navbtns">Dark Mode</a></li>
+            </ul>
+        </nav>
 
-.dark-theme {
-    --primary-color: #282828;
-    --secondary-color: #282828;
-}
+    </div>
+        <h2>Emergency Alert System</h2>
 
-#icon {
-    width: 30px;
-    cursor: pointer;
-}
+        <div class="button-container">
+            <div class="hexagon" onclick="alert('Police Alert Sent!')">
+                <img src="images/police1.png" alt="Police">
+            </div>
+            <div class="row">
+                <div class="hexagon" onclick="alert('Fire Alert Sent!')">
+                    <img src="images/firefighter1.png" alt="Fire">
+                </div>
+                <div class="hexagon" onclick="alert('Medical Alert Sent!')">
+                    <img src="images/ambulance1.png" alt="Medical">
+                </div>
+            </div>
+        </div>
 
-/* Sidebar */
-a, button {
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
-}
-
-.navitems {
-    position: absolute;
-    top: 100px;
-    left: 0;
-    width: 250px;
-}
-
-.navigation {
-    position: fixed;
-    left: -500px;
-    width: 350px;
-    height: 100%;
-    background-color: #000;
-    transition: 0.5s;
-}
-
-.navigation .navul .navli {
-    color: #fff;
-    text-align: left;
-    text-transform: uppercase;
-    list-style-type: none;
-    font-size: 1.5em;
-    padding: 20px 30px;
-    border-bottom: 1pt solid #252525;
-}
-
-.hamburger, .bar {
-    position: fixed;
-}
-
-.hamburger {
-    display: block;
-    top: 5%;
-    left: 5%;
-    width: 30px;
-    height: 30px;
-    transform: translateY(-50%);
-    border: 0;
-    background: 0 0;
-}
-
-.bar {
-    top: 3px;
-    background: #000;
-    width: 100%;
-    height: 4px;
-    transition: all 0.3s ease-in;
-}
-
-#bar2 {
-    top: 11px;
-}
-
-#bar3 {
-    top: 19px;
-}
-
-.navigation.active {
-    left: 0;
-}
-
-.hamburger.open #bar1 {
-    background-color: #fff;
-    transform: rotate(45deg) translate(6px, 5px);
-}
-
-.hamburger.open #bar2 {
-    background-color: transparent;
-}
-
-.hamburger.open #bar3 {
-    background-color: #fff;
-    transform: rotate(-45deg) translate(6px, -5px);
-}
-
-/* Hero Section */
-h2 {
-    font-size: 32px; 
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px; /* Reduced spacing */
-    margin-top: 50px;
-}
-
-.row {
-    display: flex;
-    justify-content: center;
-    gap: 30px; /* Reduced spacing between hexagons */
-}
-
-.hexagon {
-    width: 220px; /* Larger hexagon */
-    height: 190px; /* Taller hexagon */
-    cursor: pointer;
-    position: relative;
-    background-color: #007bff;
-    clip-path: polygon(50% 0%, 87% 25%, 87% 75%, 50% 100%, 13% 75%, 13% 25%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.hexagon:hover {
-    transform: scale(1.1); /* Slight zoom on hover */
-    background-color: #0056b3; /* Darker blue on hover */
-}
-
-.hexagon img {
-    width: 90%; /* Adjusted size for better fit */
-    height: 90%;
-    object-fit: cover;
-    clip-path: polygon(50% 0%, 87% 25%, 87% 75%, 50% 100%, 13% 75%, 13% 25%);
-}
-
-/* Send Alert Button */
-.send-alert {
-    margin-top: 50px;
-    padding: 15px 40px;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: #333;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.send-alert:hover {
-    background-color: #555;
-    transform: scale(1.05);
-}
-
-/* Emergency Buttons */
-.emergency-buttons {
-    display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: center;
-    gap: 20px; /* Even spacing between buttons */
-    margin-top: 20px;
-}
-
-.emergency-call,
-.emergency-text {
-    padding: 15px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #007bff; /* Updated color */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 80%; /* Make buttons responsive */
-    max-width: 300px; /* Limit button width */
-    text-align: center;
-}
-
-.emergency-call:hover,
-.emergency-text:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-}
-
-/* Responsive Layout for Mobile */
-@media screen and (max-width: 768px) {
-    .row {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px; /* Reduced spacing for smaller screens */
-    }
-
-    .hexagon {
-        width: 180px; /* Smaller hexagon for tablets */
-        height: 150px;
-    }
-
-    .button-container {
-        gap: 30px; /* Adjusted spacing */
-    }
-
-    .emergency-call,
-    .emergency-text {
-        font-size: 14px;
-        padding: 12px 25px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .row {
-        gap: 15px; /* Further reduced spacing for phones */
-    }
-
-    .hexagon {
-        width: 150px; /* Smaller hexagon for phones */
-        height: 120px;
-    }
-
-    .send-alert {
-        font-size: 18px; /* Adjusted button font size */
-        padding: 12px 30px;
-    }
-
-    .emergency-call,
-    .emergency-text {
-        font-size: 12px;
-        padding: 10px 20px;
-    }
-}
+        <div class="emergency-buttons">
+            <button class="emergency-call" onclick="alert('Emergency Call Initiated!')">Emergency Call</button>
+            <button class="emergency-text" onclick="alert('Emergency Text Sent!')">Emergency Text</button>
+        </div>
+    </div>
+    <script src="JS/sidebar.js"></script>
+</body>
+</html>

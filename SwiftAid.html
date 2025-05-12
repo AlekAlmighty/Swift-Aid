@@ -11,6 +11,13 @@
             box-sizing: border-box;
         }
 
+        /*===== VARIABLES CSS =====*/
+
+        /*=== Colores ===*/
+        :root{
+        --first-color: #12192C;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -26,6 +33,27 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+        }
+
+        /*=== Shapes ===*/
+        .shape1,
+        .shape2{
+        position: absolute;
+        width: 300px;
+        height: 250px;
+        border-radius: 50%;
+        }
+
+    .shape1{
+    top: -7rem;
+    left: -3.5rem;
+    background: linear-gradient(180deg, var(--first-color) 0%, rgba(196,196,196,0) 100%);
+        }
+        .shape2{
+        bottom: -6rem;
+        right: -5.5rem;
+        background: linear-gradient(180deg, var(--first-color) 0%, rgba(196,196,196,0) 100%);
+        transform: rotate(180deg);
         }
 
         .logo {
@@ -48,6 +76,25 @@
             color: #333;
         }
 
+        /* Enter Button Styling */
+        .enter-button {
+                margin-top: 60px; /* Increased margin to move it 20px lower */
+            padding: 20px 49px; /* Increased padding for a larger button (15px more) */
+            font-size: 20px; /* Slightly larger font size for better scaling */
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .enter-button:hover {
+            background-color: #0056b3;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .logo img {
@@ -56,28 +103,33 @@
             }
 
             h1 {
-                font-size: 20px; /* Smaller font size for tablets */
+                font-size: 20px;
             }
         }
 
         @media (max-width: 480px) {
             .logo img {
-                width: 70vw; /* Larger for smaller screens */
+                width: 70vw;
                 max-width: 200px;
             }
 
             h1 {
-                font-size: 18px; /* Smaller font size for phones */
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+
+        <div class="shape1"></div>
+        <div class="shape2"></div>
+
         <nav class="logo">
             <img src="images/logo.png" alt="Swift Aid Logo">
             <h1>OLONGAPO IMMEDIATE RESPONSE</h1>
         </nav>
+        <a href="Alerts.html" class="enter-button">Enter</a>
     </div>
 </body>
 </html>

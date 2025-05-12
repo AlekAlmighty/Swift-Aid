@@ -163,8 +163,6 @@
     }
 
     // Example usage: Add a route from Gordon College to a sample destination
-    const sampleDestinationLatLng = L.latLng(14.8292, 120.2820);
-    addRouting(gordonCollegeLatLng.lat, gordonCollegeLatLng.lng, sampleDestinationLatLng.lat, sampleDestinationLatLng.lng);
   </script>
 
   <!-- Leaflet CSS & JS -->
@@ -187,7 +185,7 @@
 
         body { 
             font-family: Arial, sans-serif; 
-            background-color: #d3d3d3; 
+            background-color: #f4f4f9; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -202,12 +200,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
         }
 
         .map-container {
-            width: 85%; /* Adjusted size */
-            height: 60vh; /* Google Maps Embedded */
+            width: 98%; /* Adjusted size */
+            height: 80vh; /* Google Maps Embedded */
             background-color: #fff;
             border: 2px solid #ccc;
         }
@@ -242,25 +239,6 @@
   #resetButton:hover {
     background-color: #0056b3;
   }
-    /* emergency call */
-    .callbtn{
-    padding: 15px 30px;
-    font-size: 20px;
-    color: white;
-    background-color: #ff0000;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    }
-
-    .callbtn:hover {
-    background-color: #cc0000;
-    }
-
-    .callbtn:active {
-    background-color: #990000;
-    }
     </style>
 </head>
 <body>
@@ -276,9 +254,7 @@
       <button id="resetButton" onclick="resetMap()">Reset Map</button>
         </div>
 
-        <button class="button" onclick="sendEmergencyText()">EMERGENCY TEXT</button>
-        <button class="button" onclick="makeEmergencyCall()">EMERGENCY CALL</button>
-        <button id="emergency-call-button" class="callbtn">EMERGENCY CALL</button>
+        <button id="emergency-call-button" class="button">EMERGENCY CALL</button>
     </div>
 
     <script>

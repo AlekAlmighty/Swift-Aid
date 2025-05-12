@@ -1,0 +1,98 @@
+body {
+    background-color: #d7d5d5;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.geo {
+    text-align: center;
+    align-items: center;
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 40px;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: black;
+}
+
+.gps {
+    margin-top: 20px;
+
+}
+body {
+    background-color: #d7d5d5;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.geo {
+    text-align: center;
+    width: 100%;
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 5vw; /* Responsive font size */
+    font-weight: bold;
+    margin: 30px 0;
+    color: black;
+}
+
+.gps {
+    width: 100%; /* Full width */
+    height: 300px; /* Fixed height for better responsiveness */
+    max-width: 700px; /* Max width for larger screens */
+    margin-top: 20px;
+}
+
+#container {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+button {
+    margin: 5px;
+    padding: 15px 30px;
+    width: 80%; /* Responsive button width */
+    max-width: 200px; /* Max width for larger screens */
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: #d7d5d5;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #9fa2a2;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 8vw; /* Adjust font size for smaller screens */
+    }
+
+    .gps {
+        height: 200px; /* Adjust height for smaller screens */
+    }
+
+    button {
+        font-size: 16px; /* Adjust button font size */
+    }
+}

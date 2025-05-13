@@ -229,6 +229,36 @@
   const adminLatLng = L.latLng(position.coords.latitude, position.coords.longitude);
   // Use adminLatLng as the starting point for the route
 });
+
+    const alertsRef = ref(database, 'alerts');
+
+    // Listen for new alerts
+    onValue(alertsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Clear previous markers and alerts
+            existingMarkersGroup.clearLayers();
+            const alertReceiverBox = document.getElementById('alerts');
+            alertReceiverBox.innerHTML = '';
+
+            Object.keys(data).forEach((key) => {
+                const alert = data[key];
+
+                // Add alert marker to the map
+                const alertMarker = L.marker([alert.latitude, alert.longitude], {
+                    icon: L.icon({
+                        iconUrl: alert.imageUrl, // Use the alert image
+                        iconSize: [50, 50]
+                    })
+                }).addTo(existingMarkersGroup);
+
+                // Add alert details to the "Alert Receiver" box
+                const alertItem = document.createElement('p');
+                alertItem.textContent = `Alert at Latitude: ${alert.latitude}, Longitude: ${alert.longitude}`;
+                alertReceiverBox.appendChild(alertItem);
+            });
+        }
+    });
   </script>
 
   <!-- Leaflet CSS & JS -->
@@ -259,7 +289,6 @@
     }
     .map-section, .chat-section, .callers-info, .alert-receiver {
       border: 2px solid #333;
-      padding: 15px;
       background: #fff;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
       border-radius: 8px;

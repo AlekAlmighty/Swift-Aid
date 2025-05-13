@@ -75,6 +75,31 @@
         });
 });
 
+    map.on('click', function (e) {
+        selectedLocation = e.latlng;
+
+        // Remove previous marker if it exists
+        if (marker) map.removeLayer(marker);
+
+        // Add new marker
+        marker = L.marker(selectedLocation).addTo(map).bindPopup("Selected Location").openPopup();
+
+        // Save the alert to Firebase
+        const alertData = {
+            latitude: selectedLocation.lat,
+            longitude: selectedLocation.lng,
+            timestamp: Date.now(),
+            imageUrl: "https://path/to/alert-image.png" // Replace with the actual image URL
+        };
+
+        set(push(ref(database, 'alerts')), alertData)
+            .then(() => {
+                alert('Alert sent successfully!');
+            })
+            .catch((error) => {
+                console.error('Error sending alert:', error);
+            });
+    });
 
     function updateStatus(msg = '', type = 'info') {
       statusElement.textContent = msg;

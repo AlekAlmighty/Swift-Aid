@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="CSS/Form.css">
+    <style>
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.98em;
+            margin-top: 4px;
+            margin-bottom: 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+  <div class="navigation">
+        <button class="hamburger" onclick="show()">
+            <div id="bar1" class="bar"></div>
+            <div id="bar2" class="bar"></div>
+            <div id="bar3" class="bar"></div>
+        </button>
+        <nav class="navitems">
+            <ul class="navul">
+                <li class="navli"><a href="Alerts.html" class="navbtns">Home</a></li>
+                <li class="navli"><a href="Form.html" class="navbtns">Registration</a></li>
+                <li class="navli"><a href="about.html" class="navbtns">About</a></li>
+                <li class="navli"><a href="#" id="icon" class="navbtns">Dark Mode</a></li>
+            </ul>
+        </nav>
+  </div>
+<div class="wrapper">
+    <div class="title">
+      Registration Form
+    </div>
+    <div class="form">
+       <form action="#" method="post" id="registrationForm" novalidate>
+       <div class="inputfield">
+          <label>First Name</label>
+          <input type="text" class="input" name="firstname" required>
+       </div>  
+        <div class="inputfield">
+          <label>Last Name</label>
+          <input type="text" class="input" name="lastname" required>
+       </div>  
+       <div class="inputfield">
+          <label>Password</label>
+          <input type="password" class="input" name="password" id="password" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters, include uppercase, lowercase, and a number.">
+          <p class="error-message" id="password-requirements" style="display:none;">Password must be at least 8 characters, include uppercase, lowercase, and a number.</p>
+       </div>  
+      <div class="inputfield">
+          <label>Confirm Password</label>
+          <input type="password" class="input" name="confirmpassword" id="confirmpassword" required>
+          <p class="error-message" id="password-error">Passwords do not match.</p>
+       </div> 
+        <div class="inputfield">
+          <label>Gender</label>
+          <div class="custom_select">
+            <select name="gender" required>
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+       </div> 
+        <div class="inputfield">
+          <label>Email Address</label>
+          <input type="email" class="input" name="email" required>
+       </div> 
+      <div class="inputfield">
+          <label>Phone Number</label>
+          <input type="tel" class="input" name="phone" required>
+       </div> 
+      <div class="inputfield">
+          <label>Address</label>
+          <textarea class="textarea" name="address" required></textarea>
+       </div> 
+      <div class="inputfield">
+          <label>Postal Code</label>
+          <input type="text" class="input" name="postalcode" required>
+       </div> 
+      <div class="inputfield terms">
+          <label class="check">
+            <input type="checkbox" name="terms" required>
+            <span class="checkmark"></span>
+          </label>
+          <p style="display:inline;">Agreed to terms and conditions 
+            <a href="Terms.html" target="_blank" style="margin-left:8px; color:#2a7ae2; text-decoration:underline; font-weight:bold;">Click here</a>
+          </p>
+       </div> 
+      <div class="inputfield">
+        <input type="submit" value="Register" class="btn">
+      </div>
+   </form>
+    </div>
+</div>	
+    <script src="JS/sidebar.js"></script>
+    <script>
+const form = document.getElementById('registrationForm');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmpassword');
+const errorMsg = document.getElementById('password-error');
+const pwReqMsg = document.getElementById('password-requirements');
+
+function checkPasswordsMatch() {
+    if (password.value !== confirmPassword.value) {
+        errorMsg.style.display = 'block';
+        confirmPassword.setCustomValidity("Passwords do not match");
+    } else {
+        errorMsg.style.display = 'none';
+        confirmPassword.setCustomValidity("");
+    }
+}
+
+function checkPasswordRequirements() {
+    // Regex: min 8 chars, at least 1 uppercase, 1 lowercase, 1 number
+    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!pattern.test(password.value)) {
+        pwReqMsg.style.display = 'block';
+        password.setCustomValidity("Password must be at least 8 characters, include uppercase, lowercase, and a number.");
+    } else {
+        pwReqMsg.style.display = 'none';
+        password.setCustomValidity("");
+    }
+}
+
+password.addEventListener('input', function() {
+    checkPasswordRequirements();
+    checkPasswordsMatch();
+});
+confirmPassword.addEventListener('input', checkPasswordsMatch);
+
+form.addEventListener('submit', function(e) {
+    checkPasswordRequirements();
+    checkPasswordsMatch();
+    if (!form.checkValidity()) {
+        e.preventDefault();
+    }
+});
+</script>
+</body>
+</html>

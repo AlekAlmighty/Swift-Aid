@@ -396,8 +396,15 @@
 <body>
   <div class="container">
     <div class="map-section">
+      <h2>Map</h2>
       <div id="map"></div>
       <div id="status" class="status info" aria-live="polite">Click on the map to select a location.</div>
+
+      <h2>Select & Save Your Location</h2>
+      <input type="text" id="locationName" placeholder="Enter a name for the location">
+      <button id="saveButton" onclick="saveLocation()" disabled>Save Location</button>
+      <!-- Add this button inside the map section -->
+      <button id="resetButton" onclick="resetMap()">Reset Map</button>
     </div>
 
     <div class="chat-section">

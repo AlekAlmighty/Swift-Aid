@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Emergency App - Mobile Friendly</title>
+  <meta charset="UTF-8">
+  <title>Pin Emergency Location</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      <!-- Firebase SDK -->
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
-    import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
-    // Your web app's Firebase configuration
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBqWoVm3LJ8-UrcFfyOk7MAMFg3UKA1GtI",
       authDomain: "swift-aid-fb2ca.firebaseapp.com",
@@ -25,332 +28,73 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const database = getDatabase(app);
+    const db = getDatabase(app);
 
-    console.log("Firebase initialized successfully!");
+    // Leaflet map setup
+    let map, marker = null, selectedLocation = null;
+    document.addEventListener('DOMContentLoaded', function() {
+      map = L.map('map').setView([14.8292, 120.2820], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
 
-    // Firebase Reference for locations
-    const locationsRef = ref(database, 'locations');
+      // Gordon College marker
+      const gordonCollegeLatLng = L.latLng(14.832005, 120.282648);
+      L.marker(gordonCollegeLatLng).addTo(map).bindPopup('Gordon College').openPopup();
 
-    // Initialize the Leaflet Map
-    const map = L.map('map').setView([14.8292, 120.2820], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Add Gordon College Marker
-    const gordonCollegeLatLng = L.latLng(14.832005, 120.282648);
-    L.marker(gordonCollegeLatLng).addTo(map).bindPopup('Gordon College').openPopup();
-
-    const existingMarkersGroup = L.layerGroup().addTo(map);
-    let selectedLocation = null;
-    let marker = null;
-    let routeControl = null;
-    const statusElement = document.getElementById('status');
-
-    map.on('click', function (e) {
-    selectedLocation = e.latlng;
-
-    // Remove previous marker if it exists
-    if (marker) map.removeLayer(marker);
-
-    // Add new marker
-    marker = L.marker(selectedLocation).addTo(map).bindPopup("Selected Location").openPopup();
-
-    // Save the selected location to Firebase
-    const locationData = {
-        latitude: selectedLocation.lat,
-        longitude: selectedLocation.lng,
-        timestamp: Date.now(),
-    };
-
-    set(ref(database, 'pinnedLocation'), locationData)
-        .then(() => {
-            console.log('Location saved to Firebase:', locationData);
-        })
-        .catch((error) => {
-            console.error('Error saving location to Firebase:', error);
-        });
-});
-
-    map.on('click', function (e) {
+      map.on('click', function(e) {
         selectedLocation = e.latlng;
-
-        // Remove previous marker if it exists
         if (marker) map.removeLayer(marker);
-
-        // Add new marker
         marker = L.marker(selectedLocation).addTo(map).bindPopup("Selected Location").openPopup();
-
-        // Save the alert to Firebase
-        const alertData = {
-            latitude: selectedLocation.lat,
-            longitude: selectedLocation.lng,
-            timestamp: Date.now(),
-            imageUrl: "https://path/to/alert-image.png" // Replace with the actual image URL
-        };
-
-        set(push(ref(database, 'alerts')), alertData)
-            .then(() => {
-                alert('Alert sent successfully!');
-            })
-            .catch((error) => {
-                console.error('Error sending alert:', error);
-            });
+        document.getElementById('sendAlertButton').disabled = false;
+      });
     });
 
-    function updateStatus(msg = '', type = 'info') {
-      statusElement.textContent = msg;
-      statusElement.className = 'status ' + type;
-    }
-
-    // Save Location to Firebase
-    window.saveLocation = function() {
-      const locationName = document.getElementById('locationName').value.trim();
-      if (!selectedLocation || !locationName) {
-        alert("Please select a location and enter a name.");
+    // Send alert to Firebase with correct image
+    window.sendAlert = function() {
+      if (!selectedLocation) {
+        alert("Please click on the map to select a location.");
         return;
       }
+      const selectedImage = localStorage.getItem('selectedAlertImage') || 'images/AlertSignal.png';
+      const alertsRef = ref(db, 'alerts');
+      const newAlertRef = push(alertsRef);
 
-      const newLocationRef = push(locationsRef);
-      set(newLocationRef, {
-        name: locationName,
+      set(newAlertRef, {
         latitude: selectedLocation.lat,
-        longitude: selectedLocation.lng
+        longitude: selectedLocation.lng,
+        imageUrl: selectedImage
       }).then(() => {
-        alert('Location saved successfully!');
-        document.getElementById('saveButton').disabled = true;
-        document.getElementById('locationName').value = '';
-        updateStatus("Location saved!", "success");
-      }).catch(error => {
-        console.error('Error saving location:', error);
-        updateStatus("Error saving location.", "error");
+        alert('Alert sent successfully!');
+        window.location.href = "Alerts.html"; // or wherever you want to redirect
+      }).catch((error) => {
+        alert('Error sending alert: ' + error);
       });
     };
-
-    // Load Existing Locations
-    onValue(locationsRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log("Received data:", data);
-
-    existingMarkersGroup.clearLayers();
-
-    if (data) {
-  Object.keys(data).forEach(key => {
-    const loc = data[key];
-    if (loc.latitude && loc.longitude) {
-      L.marker([loc.latitude, loc.longitude])
-        .addTo(existingMarkersGroup)
-        .bindPopup(loc.name || "Unnamed Location");
-    }
-  });
-}
-    }, {
-      onlyOnce: false
-    });
-
-    // Optional: WebSocket Connection (for alerts)
-    const socket = new WebSocket('ws://localhost:8080');
-
-    socket.onopen = () => {
-      console.log('Connected to WebSocket server');
-    };
-
-    socket.onmessage = (event) => {
-      const alertsDiv = document.getElementById('alerts');
-      const alertMessage = document.createElement('p');
-      alertMessage.textContent = event.data;
-      alertsDiv.appendChild(alertMessage);
-    };
-
-    socket.onclose = () => {
-      console.log('Disconnected from WebSocket server');
-    };
-
-    // Add routing functionality
-    function addRouting(startLat, startLng, endLat, endLng) {
-      const startPoint = L.latLng(startLat, startLng);
-      const endPoint = L.latLng(endLat, endLng);
-
-      // Add a routing control to the map
-      L.Routing.control({
-        waypoints: [startPoint, endPoint],
-        routeWhileDragging: true,
-        show: true,
-        createMarker: function(i, waypoint, n) {
-          return L.marker(waypoint.latLng, {
-            draggable: true
-          });
-        }
-      }).addTo(map);
-    }
-
-    // Example usage: Add a route from Gordon College to a sample destination
   </script>
-
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-  <!-- Routing and Geocoder -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body { 
-            font-family: Arial, sans-serif; 
-            background-color: #f4f4f9; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 80vh; 
-            width: 100vw;
-        }
-
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .map-container {
-            width: 98%; /* Adjusted size */
-            height: 80vh; /* Google Maps Embedded */
-            background-color: #fff;
-            border: 2px solid #ccc;
-        }
-
-        .button {
-            width: 85%; /* Matches map width */
-            padding: 15px;
-            margin: 10px 0;
-            background-color: #fff;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: #e0e0e0;
-        }
-
-        #resetButton {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  #resetButton:hover {
-    background-color: #0056b3;
-  }
-    </style>
+  <style>
+    body { margin: 0; padding: 0; background: #f4f4f9; font-family: Arial, sans-serif; }
+    #map { width: 100vw; height: 80vh; }
+    .center { text-align: center; margin-top: 20px; }
+    button {
+      padding: 12px 28px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    button:hover:not(:disabled) { background: #0056b3; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="map" class="map-container">
-      <div id="status" class="status info" aria-live="polite">Click on the map to select a location.</div>
-
-      <h2>Select & Save Your Location</h2>
-      <input type="text" id="locationName" placeholder="Enter a name for the location">
-      <button id="saveButton" onclick="saveLocation()" disabled>Save Location</button>
-
-      <!-- Reset Button -->
-      <button id="resetButton" onclick="resetMap()">Reset Map</button>
-        </div>
-
-        <button id="emergency-call-button" class="button">EMERGENCY CALL</button>
-    </div>
-
-    <script>
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 0, lng: 0 }, // Default location
-                zoom: 15
-            });
-
-            const marker = new google.maps.Marker({
-                position: { lat: 0, lng: 0 },
-                map: map
-            });
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setCenter({ lat, lng });
-                    marker.setPosition({ lat, lng });
-                }, () => {
-                    alert("Unable to retrieve your location.");
-                });
-            }
-        }
-
-        // Function to reset the map and remove all pinned locations except Gordon College
-        function resetMap() {
-  // Clear all markers in the existingMarkersGroup
-  existingMarkersGroup.clearLayers();
-
-  // Re-add the Gordon College marker
-  L.marker(gordonCollegeLatLng).addTo(existingMarkersGroup).bindPopup('Gordon College').openPopup();
-
-  // Remove any existing route
-  if (routeControl) {
-    map.removeControl(routeControl);
-    routeControl = null;
-  }
-
-  // Update the status
-  updateStatus("Map has been reset. Only Gordon College marker remains.", "info");
-}
-
-        function getCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    alert("Latitude: " + position.coords.latitude + 
-                          "\nLongitude: " + position.coords.longitude);
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
-
-        function sendEmergencyText() {
-            alert("Emergency text sent!");
-        }
-
-        function makeEmergencyCall() {
-            alert("Calling emergency services...");
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-    const emergencyButton = document.getElementById('emergency-call-button');
-
-    emergencyButton.addEventListener('click', function() {
-        window.location.href = 'tel:911';
-        });
-    });
-    </script>
-    <script defer src="https://maps.app.goo.gl/AJhZJNT9i4rw7TLa7"></script>
+  <div id="map"></div>
+  <div class="center">
+    <button id="sendAlertButton" onclick="sendAlert()" disabled>Send Emergency Alert</button>
+  </div>
 </body>
 </html>

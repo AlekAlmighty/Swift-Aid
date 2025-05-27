@@ -5,7 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="CSS/Alerts.css" class="style css">
     <title>Hexagon Emergency Buttons</title>
+    <style>
+      body {
+        background: #f4f4f9;
+        color: #222;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .button-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        box-shadow: 0 2px 8px #0004;
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+      }
+      .hexagon:hover {
+        transform: scale(1.08);
+        box-shadow: 0 4px 16px #0006;
+        background: #ffe082;
+      }
+      .hexagon img {
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+        user-select: none;
+      }
+      h2 { text-align: center; margin-top: 40px; }
+      .button {
+            width: 90%;
+            max-width: 350px;
+            min-width: 180px;
+            padding: 18px 0;
+            margin: 18px auto 0 auto;
+            background-color: #fff;
+            border: 2px solid #2196f3;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #2196f3;
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+            display: block;
+            box-shadow: 0 2px 8px #2196f344;
+        }
 
+        .button:hover {
+            background-color: #e3f2fd;
+            color: #1769aa;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px #2196f366;
+        }
+    </style>
 </head>
 <body>
     <div class="navigation">
@@ -27,19 +88,76 @@
 
     </div>
     <h3 style="color: #f4f4f9; ">.</h3>
-        <div class="button-container">
-            <div class="hexagon" onclick="window.location.href='AlertMap.html'">
-                    <img src="images/police1.png" alt="Police">
-            </div>
-            <div class="hexagon" onclick="window.location.href='AlertMap.html'">
-                <img src="images/firefighter1.png" alt="Fire">
-            </div>
-            <div class="hexagon" onclick="window.location.href='AlertMap.html'">
-                <img src="images/ambulance1.png" alt="Medical   ">
-            </div>
+    <h2>CHOOSE EMERGENCY TYPE</h2>
+    <div class="button-container">
+        <!-- Alerts.html hexagons -->
+        <div class="hexagon" onclick="sendAndRedirect('images/police1.png')">
+          <img src="images/police1.png" alt="Police">
         </div>
+        <div class="hexagon" onclick="sendAndRedirect('images/firefighter1.png')">
+          <img src="images/firefighter1.png" alt="Fire">
+        </div>
+        <div class="hexagon" onclick="sendAndRedirect('images/ambulance1.png')">
+          <img src="images/ambulance1.png" alt="Medical">
+        </div>
+      </div>
+      <button id="emergency-call-button" class="button">EMERGENCY CALL</button>
     </div>
-    <h2>EMERGENCY ALERT SYSTEM </h2>
     <script src="JS/sidebar.js"></script>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+// Your Firebase config (reuse from admin.html)
+const firebaseConfig = {
+  apiKey: "AIzaSyBqWoVm3LJ8-UrcFfyOk7MAMFg3UKA1GtI",
+  authDomain: "swift-aid-fb2ca.firebaseapp.com",
+  projectId: "swift-aid-fb2ca",
+  storageBucket: "swift-aid-fb2ca.appspot.com",
+  messagingSenderId: "267643968718",
+  appId: "1:267643968718:web:ee7652922171748c73049f",
+  measurementId: "G-QPRTE85R6V",
+  databaseURL: "https://swift-aid-fb2ca-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Alerts.html
+window.sendAndRedirect = function(selectedHexagonImageUrl) {
+  localStorage.setItem('selectedAlertImage', selectedHexagonImageUrl);
+  window.location.href = 'AlertMap.html';
+};
+
+// AlertMap.html
+function sendAlert(latitude, longitude) {
+  const selectedImage = localStorage.getItem('selectedAlertImage') || 'images/AlertSignal.png';
+  const alertsRef = ref(db, 'alerts');
+  const newAlertRef = push(alertsRef);
+
+  set(newAlertRef, {
+    latitude: latitude,
+    longitude: longitude,
+    imageUrl: selectedImage
+  });
+}
+    </script>
+    <script>
+      function sendEmergencyText() {
+            alert("Emergency text sent!");
+        }
+
+        function makeEmergencyCall() {
+            alert("Calling emergency services...");
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    const emergencyButton = document.getElementById('emergency-call-button');
+
+    emergencyButton.addEventListener('click', function() {
+        window.location.href = 'tel:911';
+        });
+    });
+    </script>
 </body>
 </html>
